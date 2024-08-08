@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class FileUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELFile {
     public static string ReadFile(string path) {
         if (!File.Exists(path)) throw new FileNotFoundException("File not Found");
         return File.ReadAllText(path);

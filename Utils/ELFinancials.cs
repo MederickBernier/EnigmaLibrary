@@ -1,7 +1,7 @@
-﻿namespace EnigmaLibrary;
-public static class FinancialUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELFinancials {
     public static decimal CalculateCompoundInterest(decimal principal, double rate, int timesCompounded, int years) {
-        double compoundFactor = Math.Pow((1 + rate / timesCompounded), timesCompounded * years);
+        double compoundFactor = Math.Pow(1 + rate / timesCompounded, timesCompounded * years);
         return principal * (decimal)compoundFactor;
     }
 

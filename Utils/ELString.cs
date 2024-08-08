@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class StringUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELString {
     public static string ToTitleCase(string input) {
         if (string.IsNullOrWhiteSpace(input)) return string.Empty;
         return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(input);

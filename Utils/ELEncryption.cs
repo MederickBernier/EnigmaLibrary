@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace EnigmaLibrary;
-public static class EncryptionUtils {
+namespace EnigmaLibrary.Utils;
+public static class ELEncryption {
     public static string EncryptString(string input, string key) {
         byte[] keyBytes = Encoding.UTF8.GetBytes(key);
         using (Aes aes = Aes.Create()) {

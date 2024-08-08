@@ -1,7 +1,7 @@
 ﻿using System.Xml.Serialization;
 
-namespace EnigmaLibrary;
-public static class XmlUtils {
+namespace EnigmaLibrary.Utils;
+public static class ELXml {
     public static string SerializeToXml<T>(T obj) {
         XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
         using (StringWriter sw = new StringWriter()) {

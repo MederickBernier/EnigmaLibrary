@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class FileHandler {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELFileHandler {
     public static bool FileExists(string path) {
         return File.Exists(path);
     }

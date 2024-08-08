@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class DirectoryUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELDirectory {
     public static void CreateDirectory(string path) {
         if (!Directory.Exists(path)) {
             Directory.CreateDirectory(path);

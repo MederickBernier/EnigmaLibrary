@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class LoggingUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELLogging {
     private static readonly string logFilePath = "log.txt";
 
     public static void LogError(string message) {

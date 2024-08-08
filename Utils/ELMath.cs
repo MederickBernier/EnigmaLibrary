@@ -1,8 +1,8 @@
-﻿namespace EnigmaLibrary;
-public static class MathUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELMath {
     public static double CalculatePercentage(double total, double value) {
         if (total == 0) throw new DivideByZeroException("total cannot be zero");
-        return (value / total) * 100;
+        return value / total * 100;
     }
 
     public static int FindGreatestCommonDivisor(int a, int b) {
@@ -15,6 +15,6 @@ public static class MathUtils {
     }
 
     public static int FindLeastCommonMultiple(int a, int b) {
-        return (a / FindGreatestCommonDivisor(a, b) * b);
+        return a / FindGreatestCommonDivisor(a, b) * b;
     }
 }

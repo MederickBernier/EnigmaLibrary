@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 
-namespace EnigmaLibrary;
-public static class JsonUtils {
+namespace EnigmaLibrary.Utils;
+public static class ELJson {
     public static string SerializeToJson<T>(T obj) {
         return JsonSerializer.Serialize(obj);
     }

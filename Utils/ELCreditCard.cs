@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class CreditCardUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELCreditCard {
     public static bool IsValidCreditCardNumber(string cardNumber) {
         if (string.IsNullOrWhiteSpace(cardNumber)) return false;
 

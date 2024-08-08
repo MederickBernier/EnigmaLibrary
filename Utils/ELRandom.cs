@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class RandomUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELRandom {
     private static readonly Random _random = new Random();
 
     public static int GenerateRandomNumber(int min, int max) {

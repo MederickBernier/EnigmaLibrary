@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace EnigmaLibrary;
-public static class ValidationUtils {
+namespace EnigmaLibrary.Utils;
+public static class ELValidation {
     public static bool IsValidEmail(string email) {
         if (string.IsNullOrWhiteSpace(email)) return false;
         var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");

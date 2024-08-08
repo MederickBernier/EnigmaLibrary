@@ -6,4 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Genetic\Crossover\" />
+    <Folder Include="Genetic\Mutation\" />
+    <Folder Include="Genetic\Fitness\" />
+    <Folder Include="Genetic\Selection\" />
+    <Folder Include="NeuralNetwork\Architecture\" />
+    <Folder Include="NeuralNetwork\Activation\" />
+    <Folder Include="NeuralNetwork\Loss\" />
+    <Folder Include="NeuralNetwork\Optimisation\" />
+    <Folder Include="Polymorphic\Dynamic\" />
+    <Folder Include="Polymorphic\Search\" />
+    <Folder Include="Polymorphic\Sorting\" />
+  </ItemGroup>
+
 </Project>

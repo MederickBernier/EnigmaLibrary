@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class HttpUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELHttp {
     private static readonly HttpClient _client = new HttpClient();
 
     public static async Task<string> GetHttpResponse(string url) {

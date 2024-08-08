@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class PrimitiveValidationUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELPrimitiveValidation {
     public static bool IsValidInt(string input) {
         return int.TryParse(input, out _);
     }

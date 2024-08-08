@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class PasswordUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELPassword {
     public static bool IsStrongPassword(string password) {
         if (string.IsNullOrWhiteSpace(password)) return false;
 

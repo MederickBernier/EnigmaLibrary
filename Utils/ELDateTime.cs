@@ -1,5 +1,5 @@
-﻿namespace EnigmaLibrary;
-public static class DateTimeUtils {
+﻿namespace EnigmaLibrary.Utils;
+public static class ELDateTime {
     public static string GetCurrentUtcTime() {
         return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
     }
