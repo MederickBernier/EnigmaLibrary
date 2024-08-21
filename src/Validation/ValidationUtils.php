@@ -94,4 +94,19 @@ class ValidationUtils
         json_decode($json);
         return json_last_error() === JSON_ERROR_NONE;
     }
+
+    public static function validateMinLength(string $string, int $minLength): bool
+    {
+        return strlen($string) >= $minLength;
+    }
+
+    public static function validateMaxLength(string $string, int $maxLength): bool
+    {
+        return strlen($string) <= $maxLength;
+    }
+
+    public static function validateRange(int $value, int $min, int $max): bool
+    {
+        return $value >= $min && $value <= $max;
+    }
 }
