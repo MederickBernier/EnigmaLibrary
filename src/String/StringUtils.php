@@ -4,6 +4,7 @@ namespace EnigmaLibrary\String;
 
 class StringUtils
 {
+
     /**
      * Converts a string to a URL-friendly slug.
      * 
@@ -78,17 +79,6 @@ class StringUtils
     }
 
     /**
-     * Converts a string to kebab-case.
-     * 
-     * @param string $string The string to convert.
-     * @return string The kebab-case string.
-     */
-    public static function toKebabCase(string $string): string
-    {
-        return strtolower(preg_replace('/[^a-z0-9]+/', '-', trim($string)));
-    }
-
-    /**
      * Checks if a string starts with a specified substring.
      * 
      * @param string $string The string to check.
@@ -154,12 +144,23 @@ class StringUtils
     }
 
     /**
-     * Pads a string to a specified length with another string.
+     * Converts a string to kebab-case.
      * 
-     * @param string $string The input string.
-     * @param int $length The new string length.
+     * @param string $string The string to convert.
+     * @return string The kebab-case string.
+     */
+    public static function toKebabCase(string $string): string
+    {
+        return strtolower(preg_replace('/[^a-z0-9]+/', '-', trim($string)));
+    }
+
+    /**
+     * Pads a string to a certain length with another string.
+     * 
+     * @param string $string The string to pad.
+     * @param int $length The desired length after padding.
      * @param string $padString The string to pad with (default is ' ').
-     * @param int $padType The padding type: STR_PAD_RIGHT, STR_PAD_LEFT, or STR_PAD_BOTH.
+     * @param int $padType The padding type (STR_PAD_RIGHT, STR_PAD_LEFT, or STR_PAD_BOTH).
      * @return string The padded string.
      */
     public static function padString(string $string, int $length, string $padString = ' ', int $padType = STR_PAD_RIGHT): string
@@ -176,17 +177,6 @@ class StringUtils
     public static function capitalizeWords(string $string): string
     {
         return ucwords($string);
-    }
-
-    /**
-     * Converts a string with accented characters to their unaccented equivalents.
-     * 
-     * @param string $string The string with accented characters.
-     * @return string The unaccented string.
-     */
-    public static function convertAccents(string $string): string
-    {
-        return strtr(utf8_decode($string), utf8_decode('àáâãäåèéêëìíîïòóôõöùúûüýÿÀÁÂÃÄÅÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaaeeeeiiiiooooouuuuyyAAAAAAEEEEIIIIOOOOOUUUUY');
     }
 
     /**

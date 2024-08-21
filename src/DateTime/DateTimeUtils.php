@@ -21,7 +21,7 @@ class DateTimeUtils
      * 
      * @param \DateTime $date1 The first date.
      * @param \DateTime $date2 The second date.
-     * @param string $unit The unit of time to return ('years', 'months', 'days').
+     * @param string $unit The unit of time to return (years, months, days).
      * @return int The difference between the two dates in the specified unit.
      */
     public static function dateDifference(\DateTime $date1, \DateTime $date2, string $unit = 'days'): int
@@ -93,11 +93,11 @@ class DateTimeUtils
     }
 
     /**
-     * Calculates the number of days in a given month and year.
+     * Returns the number of days in a given month.
      * 
-     * @param int $year The year to check.
-     * @param int $month The month to check (1-12).
-     * @return int The number of days in the specified month.
+     * @param int $year The year.
+     * @param int $month The month (1-12).
+     * @return int The number of days in the month.
      */
     public static function daysInMonth(int $year, int $month): int
     {
@@ -105,11 +105,11 @@ class DateTimeUtils
     }
 
     /**
-     * Gets the start and end dates of a given month and year.
+     * Returns the start and end dates of a given month.
      * 
-     * @param int $year The year to check.
-     * @param int $month The month to check (1-12).
-     * @return array An array containing the start and end DateTime objects of the month.
+     * @param int $year The year.
+     * @param int $month The month (1-12).
+     * @return array An array with two DateTime objects: start and end of the month.
      */
     public static function getStartAndEndOfMonth(int $year, int $month): array
     {
@@ -131,112 +131,10 @@ class DateTimeUtils
     }
 
     /**
-     * Calculates the number of days between two dates.
-     * 
-     * @param \DateTime $date1 The first date.
-     * @param \DateTime $date2 The second date.
-     * @return int The number of days between the two dates.
-     */
-    public static function daysBetweenDates(\DateTime $date1, \DateTime $date2): int
-    {
-        return $date1->diff($date2)->days;
-    }
-
-    /**
-     * Checks if a given date is a weekday (Monday to Friday).
-     * 
-     * @param \DateTime $date The date to check.
-     * @return bool True if the date is a weekday, false otherwise.
-     */
-    public static function isWeekday(\DateTime $date): bool
-    {
-        return in_array($date->format('N'), range(1, 5));
-    }
-
-    /**
-     * Adds a specified number of days to a date.
-     * 
-     * @param \DateTime $date The starting date.
-     * @param int $days The number of days to add.
-     * @return \DateTime The resulting date after adding the days.
-     */
-    public static function addDays(\DateTime $date, int $days): \DateTime
-    {
-        return $date->modify("+{$days} days");
-    }
-
-    /**
-     * Subtracts a specified number of days from a date.
-     * 
-     * @param \DateTime $date The starting date.
-     * @param int $days The number of days to subtract.
-     * @return \DateTime The resulting date after subtracting the days.
-     */
-    public static function subtractDays(\DateTime $date, int $days): \DateTime
-    {
-        return $date->modify("-{$days} days");
-    }
-
-    /**
-     * Returns the current date and time.
-     * 
-     * @return \DateTime The current date and time.
-     */
-    public static function getCurrentDateTime(): \DateTime
-    {
-        return new \DateTime();
-    }
-
-    /**
-     * Returns the start of the day for a given date.
-     * 
-     * @param \DateTime $date The date to adjust.
-     * @return \DateTime The date with time set to 00:00:00.
-     */
-    public static function getStartOfDay(\DateTime $date): \DateTime
-    {
-        return $date->setTime(0, 0, 0);
-    }
-
-    /**
-     * Returns the end of the day for a given date.
-     * 
-     * @param \DateTime $date The date to adjust.
-     * @return \DateTime The date with time set to 23:59:59.
-     */
-    public static function getEndOfDay(\DateTime $date): \DateTime
-    {
-        return $date->setTime(23, 59, 59);
-    }
-
-    /**
-     * Checks if a given date is in the future.
-     * 
-     * @param \DateTime $date The date to check.
-     * @return bool True if the date is in the future, false otherwise.
-     */
-    public static function isDateInFuture(\DateTime $date): bool
-    {
-        return $date > new \DateTime();
-    }
-
-    /**
-     * Formats a Unix timestamp into a string.
-     * 
-     * @param int $timestamp The Unix timestamp to format.
-     * @param string $format The format to use (default: Y-m-d H:i:s).
-     * @return string The formatted date string.
-     */
-    public static function formatTimestamp(int $timestamp, string $format = 'Y-m-d H:i:s'): string
-    {
-        return (new \DateTime())->setTimestamp($timestamp)->format($format);
-    }
-
-    /**
-     * Converts a DateTime object to a different timezone.
+     * Converts a DateTime object to a specific timezone.
      * 
      * @param \DateTime $date The DateTime object to convert.
-     * @param string $timezone The target timezone (e.g., 'America/New_York').
+     * @param string $timezone The target timezone.
      * @return \DateTime The DateTime object adjusted to the new timezone.
      */
     public static function convertToTimezone(\DateTime $date, string $timezone): \DateTime
@@ -300,5 +198,64 @@ class DateTimeUtils
     public static function subtractMonths(\DateTime $date, int $months): \DateTime
     {
         return $date->modify("-{$months} months");
+    }
+
+    /**
+     * Returns the start of the day (00:00:00) for a given date.
+     * 
+     * @param \DateTime $date The date to modify.
+     * @return \DateTime The start of the day.
+     */
+    public static function getStartOfDay(\DateTime $date): \DateTime
+    {
+        return $date->setTime(0, 0, 0);
+    }
+
+    /**
+     * Returns the end of the day (23:59:59) for a given date.
+     * 
+     * @param \DateTime $date The date to modify.
+     * @return \DateTime The end of the day.
+     */
+    public static function getEndOfDay(\DateTime $date): \DateTime
+    {
+        return $date->setTime(23, 59, 59);
+    }
+
+    /**
+     * Validates if a string is a valid date.
+     * 
+     * @param string $date The date string to validate.
+     * @param string $format The format to validate against (default is 'Y-m-d').
+     * @return bool True if the date is valid, false otherwise.
+     */
+    public static function isValidDate(string $date, string $format = 'Y-m-d'): bool
+    {
+        $d = \DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) === $date;
+    }
+
+    /**
+     * Returns the number of days in a given year.
+     * 
+     * @param int $year The year to check.
+     * @return int The number of days in the year.
+     */
+    public static function getDaysInYear(int $year): int
+    {
+        return (new \DateTime("{$year}-12-31"))->format('z') + 1;
+    }
+
+    /**
+     * Calculates the time difference in minutes between two dates.
+     * 
+     * @param \DateTime $date1 The first date.
+     * @param \DateTime $date2 The second date.
+     * @return int The difference in minutes.
+     */
+    public static function getTimeDifferenceInMinutes(\DateTime $date1, \DateTime $date2): int
+    {
+        $interval = $date1->diff($date2);
+        return ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
     }
 }

@@ -133,8 +133,8 @@ class ValidationUtils
     }
 
     /**
-     * Validates a credit card number using the Luhn algorithm.
-     * 
+     * Validates a credit card number.
+     *
      * @param string $number The credit card number to validate.
      * @return bool True if the credit card number is valid, false otherwise.
      */
@@ -154,10 +154,10 @@ class ValidationUtils
     }
 
     /**
-     * Validates a postal code based on country-specific formats.
-     * 
+     * Validates a postal code against a country-specific pattern.
+     *
      * @param string $postalCode The postal code to validate.
-     * @param string $countryCode The country code for the postal code format (default is 'US').
+     * @param string $countryCode The country code to determine the validation pattern.
      * @return bool True if the postal code is valid, false otherwise.
      */
     public static function validatePostalCode(string $postalCode, string $countryCode = 'US'): bool
@@ -165,7 +165,7 @@ class ValidationUtils
         $patterns = [
             'US' => '/^\d{5}(-\d{4})?$/', // United States: 12345 or 12345-6789
             'CA' => '/^[A-Z]\d[A-Z] \d[A-Z]\d$/', // Canada: A1A 1A1
-            'GB' => '/^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0AA)$/', // UK: SW1A 1AA or GIR 0AA
+            'GB' => '/^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0AA)$/', // United Kingdom: SW1A 1AA or GIR 0AA
             'FR' => '/^\d{5}$/', // France: 75008
             'DE' => '/^\d{5}$/', // Germany: 12345
             'AU' => '/^\d{4}$/', // Australia: 1234
@@ -202,5 +202,85 @@ class ValidationUtils
             'MY' => '/^\d{5}$/', // Malaysia: 12345
         ];
         return isset($patterns[$countryCode]) ? preg_match($patterns[$countryCode], $postalCode) : false;
+    }
+
+    /**
+     * Validates if a string is a valid UUID (version 4).
+     *
+     * @param string $uuid The UUID string to validate.
+     * @return bool True if the UUID is valid, false otherwise.
+     */
+    public static function validateUUID(string $uuid): bool
+    {
+        return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $uuid);
+    }
+
+    /**
+     * Validates if a string is a valid MAC address.
+     *
+     * @param string $mac The MAC address to validate.
+     * @return bool True if the MAC address is valid, false otherwise.
+     */
+    public static function validateMACAddress(string $mac): bool
+    {
+        return filter_var($mac, FILTER_VALIDATE_MAC) !== false;
+    }
+
+    /**
+     * Validates if an IP address is within a specific range.
+     *
+     * @param string $ip The IP address to validate.
+     * @param string $range The IP range in CIDR notation (e.g., 192.168.1.0/24).
+     * @return bool True if the IP is within the range, false otherwise.
+     */
+    public static function validateIPRange(string $ip, string $range): bool
+    {
+        list($subnet, $mask) = explode('/', $range);
+        return (ip2long($ip) & ~((1 << (32 - $mask)) - 1)) == ip2long($subnet);
+    }
+
+    /**
+     * Validates if a string is a valid hexadecimal color code.
+     *
+     * @param string $color The color code to validate.
+     * @return bool True if the color code is valid, false otherwise.
+     */
+    public static function validateHexColor(string $color): bool
+    {
+        return preg_match('/^#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/', $color);
+    }
+
+    /**
+     * Validates if a time string is in 24-hour format.
+     *
+     * @param string $time The time string to validate.
+     * @return bool True if the time is in 24-hour format, false otherwise.
+     */
+    public static function validateTime24Hour(string $time): bool
+    {
+        return preg_match('/^([01]\d|2[0-3]):([0-5]\d)$/', $time);
+    }
+
+    /**
+     * Validates if a time string is in 12-hour format with AM/PM.
+     *
+     * @param string $time The time string to validate.
+     * @return bool True if the time is in 12-hour format with AM/PM, false otherwise.
+     */
+    public static function validateTime12Hour(string $time): bool
+    {
+        return preg_match('/^(0[1-9]|1[0-2]):([0-5]\d) (AM|PM)$/i', $time);
+    }
+
+    /**
+     * Validates if a file size is within the specified maximum size.
+     *
+     * @param int $fileSize The size of the file in bytes.
+     * @param int $maxSize The maximum allowed file size in bytes.
+     * @return bool True if the file size is within the limit, false otherwise.
+     */
+    public static function validateFileSize(int $fileSize, int $maxSize): bool
+    {
+        return $fileSize <= $maxSize;
     }
 }

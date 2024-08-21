@@ -27,6 +27,137 @@ class DbUtils
     }
 
     /**
+     * Begins a transaction.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @return bool True on success, false on failure.
+     */
+    public static function beginTransaction(\PDO $pdo): bool
+    {
+        return $pdo->beginTransaction();
+    }
+
+    /**
+     * Commits the current transaction.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @return bool True on success, false on failure.
+     */
+    public static function commitTransaction(\PDO $pdo): bool
+    {
+        return $pdo->commit();
+    }
+
+    /**
+     * Rolls back the current transaction.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @return bool True on success, false on failure.
+     */
+    public static function rollBackTransaction(\PDO $pdo): bool
+    {
+        return $pdo->rollBack();
+    }
+
+    /**
+     * Executes an arbitrary SQL query.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $query The SQL query to execute.
+     * @param array $params Optional parameters for the query.
+     * @return bool True on success, false on failure.
+     */
+    public static function executeQuery(\PDO $pdo, string $query, array $params = []): bool
+    {
+        $stmt = $pdo->prepare($query);
+        return $stmt->execute($params);
+    }
+
+    /**
+     * Fetches a single row from the database.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $query The SQL query to execute.
+     * @param array $params Optional parameters for the query.
+     * @return array The fetched row as an associative array.
+     */
+    public static function fetchSingle(\PDO $pdo, string $query, array $params = []): array
+    {
+        $stmt = $pdo->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Bulk inserts multiple rows into a table.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $table The name of the table.
+     * @param array $data An array of associative arrays representing rows to insert.
+     * @return bool True on success, false on failure.
+     */
+    public static function bulkInsert(\PDO $pdo, string $table, array $data): bool
+    {
+        $columns = implode(', ', array_keys($data[0]));
+        $placeholders = implode(', ', array_fill(0, count($data[0]), '?'));
+        $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
+
+        $stmt = $pdo->prepare($sql);
+        foreach ($data as $row) {
+            if (!$stmt->execute(array_values($row))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Truncates a table, removing all rows but keeping the structure intact.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $table The name of the table to truncate.
+     * @return bool True on success, false on failure.
+     */
+    public static function truncateTable(\PDO $pdo, string $table): bool
+    {
+        $sql = "TRUNCATE TABLE {$table}";
+        return $pdo->exec($sql) !== false;
+    }
+
+    /**
+     * Retrieves the list of columns from a table.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $table The name of the table.
+     * @return array An array of column names.
+     */
+    public static function getTableColumns(\PDO $pdo, string $table): array
+    {
+        $stmt = $pdo->query("SHOW COLUMNS FROM {$table}");
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Counts the number of records in a table with optional conditions.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $table The name of the table.
+     * @param array $conditions An associative array of conditions for the WHERE clause.
+     * @return int The number of records matching the conditions.
+     */
+    public static function countRecords(\PDO $pdo, string $table, array $conditions = []): int
+    {
+        $sql = "SELECT COUNT(*) FROM {$table}";
+        if (!empty($conditions)) {
+            $wherePart = implode(' AND ', array_map(fn($key) => "{$key} = :{$key}", array_keys($conditions)));
+            $sql .= " WHERE {$wherePart}";
+        }
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($conditions);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
      * Builds a SELECT SQL query.
      * 
      * @param string $table The name of the table.
@@ -121,12 +252,12 @@ class DbUtils
     }
 
     /**
-     * Fetches all rows from a SQL query.
+     * Fetches all rows from a query.
      * 
      * @param \PDO $pdo The PDO instance for the database connection.
      * @param string $sql The SQL query to execute.
-     * @param array $params Optional parameters to bind to the query.
-     * @return array An array of rows.
+     * @param array $params Optional parameters for the query.
+     * @return array The fetched rows as an array of associative arrays.
      */
     public static function fetchAll(\PDO $pdo, string $sql, array $params = []): array
     {
@@ -136,13 +267,13 @@ class DbUtils
     }
 
     /**
-     * Fetches a single column from all rows in a SQL query.
+     * Fetches a single column from a query.
      * 
      * @param \PDO $pdo The PDO instance for the database connection.
      * @param string $sql The SQL query to execute.
-     * @param array $params Optional parameters to bind to the query.
+     * @param array $params Optional parameters for the query.
      * @param int $columnIndex The index of the column to fetch.
-     * @return array An array of values from the specified column.
+     * @return array The fetched column as an array.
      */
     public static function fetchColumn(\PDO $pdo, string $sql, array $params = [], int $columnIndex = 0): array
     {
@@ -152,12 +283,12 @@ class DbUtils
     }
 
     /**
-     * Counts the number of rows in a table that match the specified conditions.
+     * Counts the number of rows in a table with optional conditions.
      * 
      * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table to count rows in.
-     * @param array $conditions An associative array of conditions for the WHERE clause.
-     * @return int The number of matching rows.
+     * @param string $table The name of the table.
+     * @param array $conditions Optional conditions for the query.
+     * @return int The number of rows in the table.
      */
     public static function countRows(\PDO $pdo, string $table, array $conditions = []): int
     {
@@ -169,244 +300,5 @@ class DbUtils
         $stmt = $pdo->prepare($sql);
         $stmt->execute($conditions);
         return (int) $stmt->fetchColumn();
-    }
-
-    /**
-     * Begins a database transaction.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @return bool True on success, false on failure.
-     */
-    public static function beginTransaction(\PDO $pdo): bool
-    {
-        return $pdo->beginTransaction();
-    }
-
-    /**
-     * Commits the current transaction.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @return bool True on success, false on failure.
-     */
-    public static function commitTransaction(\PDO $pdo): bool
-    {
-        return $pdo->commit();
-    }
-
-    /**
-     * Rolls back the current transaction.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @return bool True on success, false on failure.
-     */
-    public static function rollBackTransaction(\PDO $pdo): bool
-    {
-        return $pdo->rollBack();
-    }
-
-    /**
-     * Fetches a single row from a SQL query.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $sql The SQL query to execute.
-     * @param array $params Optional parameters to bind to the query.
-     * @return array|null The fetched row or null if no row is found.
-     */
-    public static function fetchSingleRow(\PDO $pdo, string $sql, array $params = []): ?array
-    {
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
-    }
-
-    /**
-     * Executes a SQL query that does not return a result set (e.g., INSERT, UPDATE, DELETE).
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $sql The SQL query to execute.
-     * @param array $params Optional parameters to bind to the query.
-     * @return bool True on success, false on failure.
-     */
-    public static function executeQuery(\PDO $pdo, string $sql, array $params = []): bool
-    {
-        $stmt = $pdo->prepare($sql);
-        return $stmt->execute($params);
-    }
-
-    /**
-     * Gets the ID of the last inserted row.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string|null $name The name of the sequence object from which the ID should be returned.
-     * @return string The ID of the last inserted row.
-     */
-    public static function getLastInsertId(\PDO $pdo, string $name = null): string
-    {
-        return $pdo->lastInsertId($name);
-    }
-
-    /**
-     * Builds an INSERT SQL query.
-     * 
-     * @param string $table The name of the table.
-     * @param array $data An associative array of data to insert (column => value).
-     * @return string The SQL query string.
-     */
-    public static function buildInsertQuery(string $table, array $data): string
-    {
-        $columns = implode(', ', array_keys($data));
-        $placeholders = ':' . implode(', :', array_keys($data));
-        return "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
-    }
-
-    /**
-     * Builds an UPDATE SQL query.
-     * 
-     * @param string $table The name of the table.
-     * @param array $data An associative array of data to update (column => value).
-     * @param array $conditions An associative array of conditions for the WHERE clause.
-     * @return string The SQL query string.
-     */
-    public static function buildUpdateQuery(string $table, array $data, array $conditions): string
-    {
-        $setPart = implode(', ', array_map(fn($key) => "{$key} = :{$key}", array_keys($data)));
-        $wherePart = implode(' AND ', array_map(fn($key) => "{$key} = :where_{$key}", array_keys($conditions)));
-        return "UPDATE {$table} SET {$setPart} WHERE {$wherePart}";
-    }
-
-    /**
-     * Truncates a table, deleting all its rows without removing the table structure.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table to truncate.
-     * @return bool True on success, false on failure.
-     */
-    public static function truncateTable(\PDO $pdo, string $table): bool
-    {
-        $sql = "TRUNCATE TABLE {$table}";
-        return $pdo->exec($sql) !== false;
-    }
-
-    /**
-     * Creates a new table in the database.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table to create.
-     * @param array $columns An associative array of columns (column name => definition).
-     * @param array $options Additional SQL options for table creation.
-     * @return bool True on success, false on failure.
-     */
-    public static function createTable(\PDO $pdo, string $table, array $columns, array $options = []): bool
-    {
-        $columnsSql = [];
-        foreach ($columns as $column => $definition) {
-            $columnsSql[] = "{$column} {$definition}";
-        }
-        $optionsSql = implode(' ', $options);
-        $sql = "CREATE TABLE {$table} (" . implode(', ', $columnsSql) . ") {$optionsSql}";
-        return $pdo->exec($sql) !== false;
-    }
-
-    /**
-     * Drops a table from the database.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table to drop.
-     * @return bool True on success, false on failure.
-     */
-    public static function dropTable(\PDO $pdo, string $table): bool
-    {
-        $sql = "DROP TABLE IF EXISTS {$table}";
-        return $pdo->exec($sql) !== false;
-    }
-
-    /**
-     * Fetches all values from a specific column in a table.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table.
-     * @param string $column The name of the column to fetch.
-     * @return array An array of values from the specified column.
-     */
-    public static function fetchAllColumns(\PDO $pdo, string $table, string $column): array
-    {
-        $sql = "SELECT {$column} FROM {$table}";
-        $stmt = $pdo->query($sql);
-        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
-    }
-
-    /**
-     * Fetches all distinct values from a specific column in a table.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table.
-     * @param string $column The name of the column to fetch.
-     * @return array An array of distinct values from the specified column.
-     */
-    public static function fetchColumnDistinct(\PDO $pdo, string $table, string $column): array
-    {
-        $sql = "SELECT DISTINCT {$column} FROM {$table}";
-        $stmt = $pdo->query($sql);
-        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
-    }
-
-    /**
-     * Locks a table for exclusive access.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table to lock.
-     * @param string $mode The lock mode (default is 'WRITE').
-     * @return bool True on success, false on failure.
-     */
-    public static function lockTable(\PDO $pdo, string $table, string $mode = 'WRITE'): bool
-    {
-        $sql = "LOCK TABLES {$table} {$mode}";
-        return $pdo->exec($sql) !== false;
-    }
-
-    /**
-     * Unlocks all previously locked tables.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @return bool True on success, false on failure.
-     */
-    public static function unlockTables(\PDO $pdo): bool
-    {
-        return $pdo->exec("UNLOCK TABLES") !== false;
-    }
-
-    /**
-     * Checks if a table exists in the database.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table to check.
-     * @return bool True if the table exists, false otherwise.
-     */
-    public static function tableExists(\PDO $pdo, string $table): bool
-    {
-        try {
-            $result = $pdo->query("SELECT 1 FROM {$table} LIMIT 1");
-        } catch (\PDOException $e) {
-            return false;
-        }
-        return $result !== false;
-    }
-
-    /**
-     * Fetches all values from a specific column in a table, filtered by conditions.
-     * 
-     * @param \PDO $pdo The PDO instance for the database connection.
-     * @param string $table The name of the table.
-     * @param string $column The name of the column to fetch.
-     * @param array $conditions An associative array of conditions for the WHERE clause.
-     * @return array An array of values from the specified column.
-     */
-    public static function fetchColumnByCondition(\PDO $pdo, string $table, string $column, array $conditions): array
-    {
-        $wherePart = implode(' AND ', array_map(fn($key) => "{$key} = :{$key}", array_keys($conditions)));
-        $sql = "SELECT {$column} FROM {$table} WHERE {$wherePart}";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($conditions);
-        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 }

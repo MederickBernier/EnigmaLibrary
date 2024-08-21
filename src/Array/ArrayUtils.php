@@ -108,10 +108,10 @@ class ArrayUtils
     }
 
     /**
-     * Filters an array by specified keys.
+     * Filters an array to keep only specified keys.
      *
      * @param array $array The array to filter.
-     * @param array $keys The keys to keep in the array.
+     * @param array $keys The keys to keep.
      * @return array The filtered array.
      */
     public static function arrayFilterKeys(array $array, array $keys): array
@@ -122,7 +122,7 @@ class ArrayUtils
     }
 
     /**
-     * Removes all null values from an array.
+     * Removes null values from an array.
      *
      * @param array $array The array to filter.
      * @return array The array without null values.
@@ -133,10 +133,10 @@ class ArrayUtils
     }
 
     /**
-     * Removes duplicate values from a multidimensional array.
+     * Returns an array with unique values, preserving keys.
      *
      * @param array $array The array to filter.
-     * @return array The array without duplicate values.
+     * @return array The array with unique values.
      */
     public static function arrayUnique(array $array): array
     {
@@ -144,13 +144,37 @@ class ArrayUtils
     }
 
     /**
-     * Checks if a key exists in a multidimensional array recursively.
+     * Chunks an array into smaller arrays of a specified size.
      *
-     * @param string|int $key The key to check for.
+     * @param array $array The array to chunk.
+     * @param int $size The size of each chunk.
+     * @return array A multidimensional array with the chunks.
+     */
+    public static function arrayChunk(array $array, int $size): array
+    {
+        return array_chunk($array, $size);
+    }
+
+    /**
+     * Combines the keys from one array with the values from another.
+     *
+     * @param array $keys The array of keys.
+     * @param array $values The array of values.
+     * @return array The combined array.
+     */
+    public static function arrayCombine(array $keys, array $values): array
+    {
+        return array_combine($keys, $values);
+    }
+
+    /**
+     * Checks if a key exists in a multidimensional array.
+     *
+     * @param string $key The key to search for.
      * @param array $array The array to search.
      * @return bool True if the key exists, false otherwise.
      */
-    public static function arrayKeyExistsRecursive($key, array $array): bool
+    public static function arrayKeyExistsRecursive(string $key, array $array): bool
     {
         if (array_key_exists($key, $array)) {
             return true;
@@ -166,193 +190,150 @@ class ArrayUtils
     }
 
     /**
-     * Flattens a multidimensional array into a single level with keys preserved.
+     * Computes the difference between two arrays recursively.
      *
-     * @param array $array The array to flatten.
-     * @param string $separator The separator for the keys (default is '.').
-     * @return array The flattened array with keys preserved.
+     * @param array $array1 The first array.
+     * @param array $array2 The second array.
+     * @return array The array containing all the elements from $array1 that are not present in $array2.
      */
-    public static function arrayFlattenWithKeys(array $array, string $separator = '.'): array
+    public static function arrayDiffRecursive(array $array1, array $array2): array
     {
         $result = [];
-
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($array));
-        foreach ($iterator as $key => $value) {
-            $keys = [];
-            foreach (range(0, $iterator->getDepth()) as $depth) {
-                $keys[] = $iterator->getSubIterator($depth)->key();
+        foreach ($array1 as $key => $value) {
+            if (is_array($value)) {
+                if (!isset($array2[$key]) || !is_array($array2[$key])) {
+                    $result[$key] = $value;
+                } else {
+                    $diff = self::arrayDiffRecursive($value, $array2[$key]);
+                    if (!empty($diff)) {
+                        $result[$key] = $diff;
+                    }
+                }
+            } elseif (!in_array($value, $array2)) {
+                $result[$key] = $value;
             }
-            $result[join($separator, $keys)] = $value;
         }
-
         return $result;
     }
 
     /**
-     * Partitions an array into two arrays based on a callback function.
+     * Filters an array recursively.
+     *
+     * @param array $array The array to filter.
+     * @param callable $callback The callback function to use.
+     * @return array The filtered array.
+     */
+    public static function arrayFilterRecursive(array $array, callable $callback): array
+    {
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                $value = self::arrayFilterRecursive($value, $callback);
+            }
+            if (!$callback($value)) {
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
+
+    /**
+     * Applies a callback to all elements of an array recursively.
+     *
+     * @param callable $callback The callback function to apply.
+     * @param array $array The array to process.
+     * @return array The array with the callback applied.
+     */
+    public static function arrayMapRecursive(callable $callback, array $array): array
+    {
+        array_walk_recursive($array, function (&$item) use ($callback) {
+            $item = $callback($item);
+        });
+        return $array;
+    }
+
+    /**
+     * Pads an array to a specified length with a value.
+     *
+     * @param array $array The array to pad.
+     * @param int $size The size to pad to.
+     * @param mixed $value The value to pad with.
+     * @return array The padded array.
+     */
+    public static function arrayPad(array $array, int $size, $value): array
+    {
+        return array_pad($array, $size, $value);
+    }
+
+    /**
+     * Partitions an array into two arrays based on a predicate.
      *
      * @param array $array The array to partition.
-     * @param callable $callback The callback function to use for partitioning.
-     * @return array An array containing two arrays: the first with elements that pass the callback, the second with elements that fail.
+     * @param callable $callback The predicate to determine the partition.
+     * @return array An array with two sub-arrays: the first with elements that match the predicate, the second with the rest.
      */
     public static function arrayPartition(array $array, callable $callback): array
     {
         $pass = [];
         $fail = [];
-
         foreach ($array as $key => $value) {
-            if ($callback($value, $key)) {
+            if ($callback($value)) {
                 $pass[$key] = $value;
             } else {
                 $fail[$key] = $value;
             }
         }
-
         return [$pass, $fail];
     }
 
     /**
-     * Shuffles an associative array while preserving keys.
+     * Replaces elements in an array recursively.
      *
-     * @param array $array The associative array to shuffle.
+     * @param array ...$arrays The arrays to replace values in.
+     * @return array The array with replaced values.
+     */
+    public static function arrayReplaceRecursive(array ...$arrays): array
+    {
+        return array_replace_recursive(...$arrays);
+    }
+
+    /**
+     * Randomly shuffles the elements of an array.
+     *
+     * @param array $array The array to shuffle.
      * @return array The shuffled array.
      */
-    public static function arrayShuffleAssoc(array $array): array
+    public static function arrayShuffle(array $array): array
     {
-        $keys = array_keys($array);
-        shuffle($keys);
-        $shuffledArray = [];
-        foreach ($keys as $key) {
-            $shuffledArray[$key] = $array[$key];
-        }
-        return $shuffledArray;
-    }
-
-    /**
-     * Transposes a 2D array (exchanges rows and columns).
-     *
-     * @param array $array The array to transpose.
-     * @return array The transposed array.
-     */
-    public static function arrayTranspose(array $array): array
-    {
-        $transposed = [];
-        foreach ($array as $rowKey => $row) {
-            foreach ($row as $colKey => $value) {
-                $transposed[$colKey][$rowKey] = $value;
-            }
-        }
-        return $transposed;
-    }
-
-    /**
-     * Inserts a value into an array after a specified key.
-     *
-     * @param array $array The array to modify.
-     * @param string|int $key The key after which to insert the new element.
-     * @param string|int $newKey The key for the new element.
-     * @param mixed $newValue The value for the new element.
-     * @return array The modified array.
-     */
-    public static function arrayInsertAfter(array $array, $key, $newKey, $newValue): array
-    {
-        $keys = array_keys($array);
-        $index = array_search($key, $keys);
-
-        if ($index !== false) {
-            $index++;
-            $array = array_slice($array, 0, $index, true) +
-                [$newKey => $newValue] +
-                array_slice($array, $index, null, true);
-        }
-
+        shuffle($array);
         return $array;
     }
 
     /**
-     * Computes the Cartesian product of multiple arrays.
+     * Sums the elements of an array, supporting multidimensional arrays.
      *
-     * @param array ...$arrays The arrays to compute the Cartesian product of.
-     * @return array The Cartesian product as an array.
+     * @param array $array The array to sum.
+     * @return float The sum of the elements in the array.
      */
-    public static function arrayCartesianProduct(array ...$arrays): array
+    public static function arraySum(array $array): float
     {
-        $result = [[]];
-
-        foreach ($arrays as $property => $values) {
-            $append = [];
-            foreach ($result as $product) {
-                foreach ($values as $item) {
-                    $product[$property] = $item;
-                    $append[] = $product;
-                }
-            }
-            $result = $append;
-        }
-
-        return $result;
+        return array_sum(array_map('array_sum', $array));
     }
 
     /**
-     * Converts an array to a CSV string.
+     * Recursively applies a callback to each element of an array, including keys.
      *
-     * @param array $array The array to convert.
-     * @param string $delimiter The delimiter to use in the CSV (default is ',').
-     * @param string $enclosure The enclosure to use in the CSV (default is '"').
-     * @return string The CSV string.
+     * @param array &$array The array to walk through.
+     * @param callable $callback The callback function to apply.
+     * @return void
      */
-    public static function arrayToCsv(array $array, string $delimiter = ',', string $enclosure = '"'): string
+    public static function arrayWalkRecursiveWithKey(array &$array, callable $callback): void
     {
-        $f = fopen('php://memory', 'r+');
-        foreach ($array as $row) {
-            fputcsv($f, $row, $delimiter, $enclosure);
-        }
-        rewind($f);
-        $csv = stream_get_contents($f);
-        fclose($f);
-        return $csv;
-    }
-
-    /**
-     * Removes duplicate values from a multidimensional array based on a specific key.
-     *
-     * @param array $array The array to filter.
-     * @param string $key The key to check for duplicates.
-     * @return array The array without duplicate values.
-     */
-    public static function arrayRemoveDuplicates(array $array, string $key): array
-    {
-        $temp = [];
-        foreach ($array as $item) {
-            if (!in_array($item[$key], $temp)) {
-                $temp[] = $item[$key];
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                self::arrayWalkRecursiveWithKey($value, $callback);
+            } else {
+                $callback($value, $key);
             }
         }
-
-        return array_values(array_filter($array, function ($item) use ($temp) {
-            return in_array($item, $temp);
-        }));
-    }
-
-    /**
-     * Computes the intersection of two associative arrays recursively.
-     *
-     * @param array $array1 The first array.
-     * @param array $array2 The second array.
-     * @return array The array containing all elements of $array1 that are present in $array2.
-     */
-    public static function arrayIntersectAssocRecursive(array $array1, array $array2): array
-    {
-        $result = [];
-        foreach ($array1 as $key => $value) {
-            if (array_key_exists($key, $array2)) {
-                if (is_array($value) && is_array($array2[$key])) {
-                    $result[$key] = self::arrayIntersectAssocRecursive($value, $array2[$key]);
-                } elseif ($value === $array2[$key]) {
-                    $result[$key] = $value;
-                }
-            }
-        }
-        return $result;
     }
 }

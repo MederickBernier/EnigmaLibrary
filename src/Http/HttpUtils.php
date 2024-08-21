@@ -183,7 +183,7 @@ class HttpUtils
      * Parses a URL and returns its components.
      * 
      * @param string $url The URL to parse.
-     * @return array The parsed components of the URL.
+     * @return array The parsed URL components.
      */
     public static function parseUrl(string $url): array
     {
@@ -193,7 +193,7 @@ class HttpUtils
     /**
      * Sets multiple HTTP headers.
      * 
-     * @param array $headers An array of headers to set.
+     * @param array $headers The headers to set.
      * @return void
      */
     public static function setHttpHeaders(array $headers): void
@@ -204,10 +204,10 @@ class HttpUtils
     }
 
     /**
-     * Returns the message corresponding to an HTTP status code.
+     * Gets the HTTP status message for a given status code.
      * 
      * @param int $statusCode The HTTP status code.
-     * @return string The message associated with the status code.
+     * @return string The corresponding status message.
      */
     public static function getHttpStatusMessage(int $statusCode): string
     {
@@ -219,87 +219,18 @@ class HttpUtils
             403 => 'Forbidden',
             404 => 'Not Found',
             500 => 'Internal Server Error',
-            // Add more status codes and messages as needed
+            // Add other status codes as needed
         ];
         return $statusMessages[$statusCode] ?? 'Unknown Status';
     }
 
     /**
-     * Sends a JSON response.
+     * Checks if the current request is using a specific HTTP method.
      * 
-     * @param array $data The data to include in the JSON response.
-     * @param int $statusCode The HTTP status code (default is 200).
-     * @return void
+     * @param string $method The HTTP method to check (e.g., 'POST', 'GET').
+     * @return bool True if the current request uses the specified method, false otherwise.
      */
-    public static function sendJsonResponse(array $data, int $statusCode = 200): void
-    {
-        header('Content-Type: application/json');
-        http_response_code($statusCode);
-        echo json_encode($data);
-        exit();
-    }
-
-    /**
-     * Retrieves a specific query parameter from the URL.
-     * 
-     * @param string $name The name of the query parameter.
-     * @param string|null $default The default value if the parameter is not found.
-     * @return string|null The value of the query parameter or the default value.
-     */
-    public static function getQueryParam(string $name, ?string $default = null): ?string
-    {
-        return $_GET[$name] ?? $default;
-    }
-
-    /**
-     * Retrieves a specific POST parameter.
-     * 
-     * @param string $name The name of the POST parameter.
-     * @param string|null $default The default value if the parameter is not found.
-     * @return string|null The value of the POST parameter or the default value.
-     */
-    public static function getPostParam(string $name, ?string $default = null): ?string
-    {
-        return $_POST[$name] ?? $default;
-    }
-
-    /**
-     * Redirects to a URL with a flash message.
-     * 
-     * @param string $url The URL to redirect to.
-     * @param string $message The flash message to set.
-     * @param string $type The type of message (e.g., 'info', 'success', 'error').
-     * @return void
-     */
-    public static function redirectWithMessage(string $url, string $message, string $type = 'info'): void
-    {
-        $_SESSION['flash_message'] = ['type' => $type, 'message' => $message];
-        header("Location: {$url}");
-        exit();
-    }
-
-    /**
-     * Retrieves and removes a flash message from the session.
-     * 
-     * @return array|null The flash message data or null if not set.
-     */
-    public static function getFlashMessage(): ?array
-    {
-        if (isset($_SESSION['flash_message'])) {
-            $message = $_SESSION['flash_message'];
-            unset($_SESSION['flash_message']);
-            return $message;
-        }
-        return null;
-    }
-
-    /**
-     * Checks if the current HTTP request method matches the specified method.
-     * 
-     * @param string $method The HTTP method to check (e.g., 'GET', 'POST').
-     * @return bool True if the request method matches, false otherwise.
-     */
-    public static function isMethod(string $method): bool
+    public static function isRequestMethod(string $method): bool
     {
         return strtoupper($_SERVER['REQUEST_METHOD']) === strtoupper($method);
     }
@@ -354,5 +285,33 @@ class HttpUtils
             readfile($filePath);
             exit();
         }
+    }
+
+    /**
+     * Checks if an HTTP response is successful (status code 200-299).
+     * 
+     * @param int $statusCode The HTTP status code.
+     * @return bool True if the response is successful, false otherwise.
+     */
+    public static function isHttpSuccess(int $statusCode): bool
+    {
+        return $statusCode >= 200 && $statusCode < 300;
+    }
+
+    /**
+     * Logs the details of an HTTP request and response.
+     * 
+     * @param string $method The HTTP method used (e.g., 'GET', 'POST').
+     * @param string $url The URL of the request.
+     * @param array $headers The headers sent with the request.
+     * @param string $requestBody The body of the request.
+     * @param string $responseBody The body of the response.
+     * @param int $statusCode The HTTP status code of the response.
+     * @return void
+     */
+    public static function logHttpRequestResponse(string $method, string $url, array $headers, string $requestBody, string $responseBody, int $statusCode): void
+    {
+        // This function can be implemented to log the details as needed, e.g., to a file or a logging service.
+        // Example: error_log("[$method] $url\nHeaders: " . print_r($headers, true) . "\nRequest: $requestBody\nResponse: $responseBody\nStatus: $statusCode");
     }
 }

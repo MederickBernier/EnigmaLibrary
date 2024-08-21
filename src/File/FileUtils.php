@@ -133,6 +133,9 @@ class FileUtils
      */
     public static function copyFile(string $source, string $destination): bool
     {
+        if (!file_exists($source)) {
+            throw new \Exception("Source file not found: {$source}");
+        }
         return copy($source, $destination);
     }
 
@@ -156,6 +159,9 @@ class FileUtils
      */
     public static function moveFile(string $source, string $destination): bool
     {
+        if (!file_exists($source)) {
+            throw new \Exception("Source file not found: {$source}");
+        }
         return rename($source, $destination);
     }
 
@@ -168,5 +174,91 @@ class FileUtils
     public static function getMimeType(string $filePath): string
     {
         return mime_content_type($filePath);
+    }
+
+    /**
+     * Compresses a file using gzip.
+     * 
+     * @param string $filePath The path to the file to compress.
+     * @param string $destination The destination path for the compressed file.
+     * @return bool True on success, false on failure.
+     */
+    public static function compressFile(string $filePath, string $destination): bool
+    {
+        if (!file_exists($filePath)) {
+            throw new \Exception("File not found: {$filePath}");
+        }
+        $data = file_get_contents($filePath);
+        $compressedData = gzencode($data, 9);
+        return file_put_contents($destination, $compressedData) !== false;
+    }
+
+    /**
+     * Decompresses a gzip file.
+     * 
+     * @param string $filePath The path to the gzip file.
+     * @param string $destination The destination path for the decompressed file.
+     * @return bool True on success, false on failure.
+     */
+    public static function decompressFile(string $filePath, string $destination): bool
+    {
+        if (!file_exists($filePath)) {
+            throw new \Exception("File not found: {$filePath}");
+        }
+        $compressedData = file_get_contents($filePath);
+        $data = gzdecode($compressedData);
+        return file_put_contents($destination, $data) !== false;
+    }
+
+    /**
+     * Encodes a file to Base64.
+     * 
+     * @param string $filePath The path to the file.
+     * @return string The Base64 encoded content of the file.
+     * @throws \Exception if the file cannot be read.
+     */
+    public static function encodeFileToBase64(string $filePath): string
+    {
+        if (!file_exists($filePath)) {
+            throw new \Exception("File not found: {$filePath}");
+        }
+        $fileData = file_get_contents($filePath);
+        return base64_encode($fileData);
+    }
+
+    /**
+     * Decodes a Base64 string and writes it to a file.
+     * 
+     * @param string $base64String The Base64 encoded string.
+     * @param string $destination The destination path for the decoded file.
+     * @return bool True on success, false on failure.
+     */
+    public static function decodeBase64ToFile(string $base64String, string $destination): bool
+    {
+        $fileData = base64_decode($base64String);
+        return file_put_contents($destination, $fileData) !== false;
+    }
+
+    /**
+     * Gets the file permissions.
+     * 
+     * @param string $filePath The path to the file.
+     * @return string The file permissions in octal format (e.g., '0755').
+     */
+    public static function getFilePermissions(string $filePath): string
+    {
+        return substr(sprintf('%o', fileperms($filePath)), -4);
+    }
+
+    /**
+     * Sets the file permissions.
+     * 
+     * @param string $filePath The path to the file.
+     * @param string $permissions The permissions to set (e.g., '0755').
+     * @return bool True on success, false on failure.
+     */
+    public static function setFilePermissions(string $filePath, string $permissions): bool
+    {
+        return chmod($filePath, octdec($permissions));
     }
 }
