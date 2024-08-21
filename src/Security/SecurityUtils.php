@@ -126,4 +126,146 @@ class SecurityUtils
     {
         return hash_equals($hash, self::hashData($data, $algorithm));
     }
+
+    /**
+     * Validates the strength of a password based on certain criteria.
+     * 
+     * @param string $password The password to validate.
+     * @return bool True if the password meets the criteria, false otherwise.
+     */
+    public static function validatePasswordStrength(string $password): bool
+    {
+        $hasUppercase = preg_match('@[A-Z]@', $password);
+        $hasLowercase = preg_match('@[a-z]@', $password);
+        $hasNumber = preg_match('@[0-9]@', $password);
+        $hasSpecialChar = preg_match('@[^\w]@', $password);
+        return $hasUppercase && $hasLowercase && $hasNumber && $hasSpecialChar && strlen($password) >= 8;
+    }
+
+    /**
+     * Generates cryptographically secure random bytes.
+     * 
+     * @param int $length The length of the random bytes to generate.
+     * @return string The generated random bytes.
+     */
+    public static function secureRandomBytes(int $length): string
+    {
+        return random_bytes($length);
+    }
+
+    /**
+     * Escapes a string for safe use in an SQL query.
+     * 
+     * @param string $string The string to escape.
+     * @param \PDO $pdo The PDO instance for escaping the string.
+     * @return string The escaped string.
+     */
+    public static function escapeSql(string $string, \PDO $pdo): string
+    {
+        return $pdo->quote($string);
+    }
+
+    /**
+     * Generates a random password with specified length.
+     * 
+     * @param int $length The length of the password (default is 12).
+     * @return string The generated random password.
+     */
+    public static function generateRandomPassword(int $length = 12): string
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+        $password = '';
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+        return $password;
+    }
+
+    /**
+     * Starts a secure session with enhanced security parameters.
+     * 
+     * @return void
+     */
+    public static function secureSessionStart(): void
+    {
+        session_start([
+            'cookie_lifetime' => 0,
+            'cookie_httponly' => true,
+            'cookie_secure' => isset($_SERVER['HTTPS']),
+            'use_strict_mode' => true,
+            'use_cookies' => true,
+            'use_only_cookies' => true,
+        ]);
+        session_regenerate_id(true);
+    }
+
+    /**
+     * Generates a JSON Web Token (JWT) with the specified payload.
+     * 
+     * @param array $payload The payload data for the JWT.
+     * @param string $secret The secret key for signing the JWT.
+     * @return string The generated JWT.
+     */
+    public static function generateJWT(array $payload, string $secret): string
+    {
+        $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
+        $payload = json_encode($payload);
+
+        $header64 = base64_encode($header);
+        $payload64 = base64_encode($payload);
+
+        $signature = hash_hmac('sha256', "$header64.$payload64", $secret, true);
+        return "$header64.$payload64." . base64_encode($signature);
+    }
+
+    /**
+     * Verifies and decodes a JSON Web Token (JWT).
+     * 
+     * @param string $jwt The JWT to verify.
+     * @param string $secret The secret key for verifying the JWT.
+     * @return array|null The decoded payload if the JWT is valid, null otherwise.
+     */
+    public static function verifyJWT(string $jwt, string $secret): ?array
+    {
+        $parts = explode('.', $jwt);
+        if (count($parts) === 3) {
+            list($header64, $payload64, $signature) = $parts;
+            $header = json_decode(base64_decode($header64), true);
+            $payload = json_decode(base64_decode($payload64), true);
+
+            $validSignature = hash_hmac('sha256', "$header64.$payload64", $secret, true);
+            if (hash_equals($signature, base64_encode($validSignature))) {
+                return $payload;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Generates a HMAC for a given message.
+     * 
+     * @param string $data The message to hash.
+     * @param string $key The secret key for generating the HMAC.
+     * @param string $algo The hashing algorithm to use (default is 'sha256').
+     * @return string The generated HMAC.
+     */
+    public static function generateHMAC(string $data, string $key, string $algo = 'sha256'): string
+    {
+        return hash_hmac($algo, $data, $key);
+    }
+
+    /**
+     * Validates a given HMAC against the message.
+     * 
+     * @param string $data The original message.
+     * @param string $hmac The HMAC to validate.
+     * @param string $key The secret key used to generate the HMAC.
+     * @param string $algo The hashing algorithm used (default is 'sha256').
+     * @return bool True if the HMAC is valid, false otherwise.
+     */
+    public static function validateHMAC(string $data, string $hmac, string $key, string $algo = 'sha256'): bool
+    {
+        $calculatedHmac = self::generateHMAC($data, $key, $algo);
+        return hash_equals($calculatedHmac, $hmac);
+    }
 }

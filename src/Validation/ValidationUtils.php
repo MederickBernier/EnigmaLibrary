@@ -131,4 +131,76 @@ class ValidationUtils
     {
         return $value >= $min && $value <= $max;
     }
+
+    /**
+     * Validates a credit card number using the Luhn algorithm.
+     * 
+     * @param string $number The credit card number to validate.
+     * @return bool True if the credit card number is valid, false otherwise.
+     */
+    public static function validateCreditCard(string $number): bool
+    {
+        $number = preg_replace('/\D/', '', $number);
+        $checksum = 0;
+        $length = strlen($number);
+        for ($i = $length - 1; $i >= 0; $i -= 2) {
+            $checksum += $number[$i];
+        }
+        for ($i = $length - 2; $i >= 0; $i -= 2) {
+            $digit = $number[$i] * 2;
+            $checksum += ($digit < 10) ? $digit : ($digit - 9);
+        }
+        return ($checksum % 10) === 0;
+    }
+
+    /**
+     * Validates a postal code based on country-specific formats.
+     * 
+     * @param string $postalCode The postal code to validate.
+     * @param string $countryCode The country code for the postal code format (default is 'US').
+     * @return bool True if the postal code is valid, false otherwise.
+     */
+    public static function validatePostalCode(string $postalCode, string $countryCode = 'US'): bool
+    {
+        $patterns = [
+            'US' => '/^\d{5}(-\d{4})?$/', // United States: 12345 or 12345-6789
+            'CA' => '/^[A-Z]\d[A-Z] \d[A-Z]\d$/', // Canada: A1A 1A1
+            'GB' => '/^([A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}|GIR ?0AA)$/', // UK: SW1A 1AA or GIR 0AA
+            'FR' => '/^\d{5}$/', // France: 75008
+            'DE' => '/^\d{5}$/', // Germany: 12345
+            'AU' => '/^\d{4}$/', // Australia: 1234
+            'IT' => '/^\d{5}$/', // Italy: 12345
+            'ES' => '/^\d{5}$/', // Spain: 12345
+            'NL' => '/^\d{4} ?[A-Z]{2}$/', // Netherlands: 1234 AB
+            'BR' => '/^\d{5}-\d{3}$/', // Brazil: 12345-678
+            'RU' => '/^\d{6}$/', // Russia: 123456
+            'IN' => '/^\d{6}$/', // India: 110001
+            'JP' => '/^\d{3}-\d{4}$/', // Japan: 123-4567
+            'CN' => '/^\d{6}$/', // China: 123456
+            'CH' => '/^\d{4}$/', // Switzerland: 1234
+            'SE' => '/^\d{3} ?\d{2}$/', // Sweden: 123 45
+            'NO' => '/^\d{4}$/', // Norway: 1234
+            'BE' => '/^\d{4}$/', // Belgium: 1234
+            'AT' => '/^\d{4}$/', // Austria: 1234
+            'DK' => '/^\d{4}$/', // Denmark: 1234
+            'FI' => '/^\d{5}$/', // Finland: 12345
+            'IE' => '/^[A-Z]\d{2} ?[A-Z\d]{4}$/', // Ireland: A65 F4E2
+            'PT' => '/^\d{4}-\d{3}$/', // Portugal: 1234-567
+            'GR' => '/^\d{3} ?\d{2}$/', // Greece: 123 45
+            'NZ' => '/^\d{4}$/', // New Zealand: 1234
+            'ZA' => '/^\d{4}$/', // South Africa: 1234
+            'MX' => '/^\d{5}$/', // Mexico: 12345
+            'AR' => '/^([A-Z]\d{4}[A-Z]{3})|(\d{4})$/', // Argentina: A1234ABC or 1234
+            'KR' => '/^\d{5}$/', // South Korea: 12345
+            'PL' => '/^\d{2}-\d{3}$/', // Poland: 12-345
+            'SG' => '/^\d{6}$/', // Singapore: 123456
+            'HU' => '/^\d{4}$/', // Hungary: 1234
+            'CZ' => '/^\d{3} ?\d{2}$/', // Czech Republic: 123 45
+            'TR' => '/^\d{5}$/', // Turkey: 12345
+            'IL' => '/^\d{5,7}$/', // Israel: 12345 or 1234567
+            'AE' => '/^\d{5}$/', // UAE: 12345
+            'MY' => '/^\d{5}$/', // Malaysia: 12345
+        ];
+        return isset($patterns[$countryCode]) ? preg_match($patterns[$countryCode], $postalCode) : false;
+    }
 }

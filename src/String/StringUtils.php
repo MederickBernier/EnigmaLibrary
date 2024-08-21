@@ -4,7 +4,6 @@ namespace EnigmaLibrary\String;
 
 class StringUtils
 {
-
     /**
      * Converts a string to a URL-friendly slug.
      * 
@@ -79,6 +78,17 @@ class StringUtils
     }
 
     /**
+     * Converts a string to kebab-case.
+     * 
+     * @param string $string The string to convert.
+     * @return string The kebab-case string.
+     */
+    public static function toKebabCase(string $string): string
+    {
+        return strtolower(preg_replace('/[^a-z0-9]+/', '-', trim($string)));
+    }
+
+    /**
      * Checks if a string starts with a specified substring.
      * 
      * @param string $string The string to check.
@@ -141,5 +151,105 @@ class StringUtils
             return substr_replace($subject, $replace, $pos, strlen($search));
         }
         return $subject;
+    }
+
+    /**
+     * Pads a string to a specified length with another string.
+     * 
+     * @param string $string The input string.
+     * @param int $length The new string length.
+     * @param string $padString The string to pad with (default is ' ').
+     * @param int $padType The padding type: STR_PAD_RIGHT, STR_PAD_LEFT, or STR_PAD_BOTH.
+     * @return string The padded string.
+     */
+    public static function padString(string $string, int $length, string $padString = ' ', int $padType = STR_PAD_RIGHT): string
+    {
+        return str_pad($string, $length, $padString, $padType);
+    }
+
+    /**
+     * Capitalizes the first letter of each word in a string.
+     * 
+     * @param string $string The string to capitalize.
+     * @return string The capitalized string.
+     */
+    public static function capitalizeWords(string $string): string
+    {
+        return ucwords($string);
+    }
+
+    /**
+     * Converts a string with accented characters to their unaccented equivalents.
+     * 
+     * @param string $string The string with accented characters.
+     * @return string The unaccented string.
+     */
+    public static function convertAccents(string $string): string
+    {
+        return strtr(utf8_decode($string), utf8_decode('àáâãäåèéêëìíîïòóôõöùúûüýÿÀÁÂÃÄÅÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝ'), 'aaaaaaeeeeiiiiooooouuuuyyAAAAAAEEEEIIIIOOOOOUUUUY');
+    }
+
+    /**
+     * Checks if a string is a palindrome.
+     * 
+     * @param string $string The string to check.
+     * @return bool True if the string is a palindrome, false otherwise.
+     */
+    public static function isPalindrome(string $string): bool
+    {
+        $cleanedString = preg_replace('/[^a-z0-9]/i', '', strtolower($string));
+        return $cleanedString === strrev($cleanedString);
+    }
+
+    /**
+     * Extracts the initials from a string.
+     * 
+     * @param string $string The string to extract initials from.
+     * @return string The extracted initials.
+     */
+    public static function extractInitials(string $string): string
+    {
+        $words = explode(' ', $string);
+        $initials = '';
+        foreach ($words as $word) {
+            $initials .= strtoupper($word[0]);
+        }
+        return $initials;
+    }
+
+    /**
+     * Removes extra spaces from a string, leaving only single spaces between words.
+     * 
+     * @param string $string The string to clean.
+     * @return string The cleaned string.
+     */
+    public static function removeExtraSpaces(string $string): string
+    {
+        return preg_replace('/\s+/', ' ', trim($string));
+    }
+
+    /**
+     * Counts the number of words in a string.
+     * 
+     * @param string $string The string to count words in.
+     * @return int The word count.
+     */
+    public static function countWords(string $string): int
+    {
+        return str_word_count($string);
+    }
+
+    /**
+     * Masks a portion of a string, useful for hiding sensitive information.
+     * 
+     * @param string $string The string to mask.
+     * @param int $start The starting position of the mask.
+     * @param int $length The number of characters to mask.
+     * @param string $mask The character to use for masking (default is '*').
+     * @return string The masked string.
+     */
+    public static function maskString(string $string, int $start, int $length, string $mask = '*'): string
+    {
+        return substr($string, 0, $start) . str_repeat($mask, $length) . substr($string, $start + $length);
     }
 }

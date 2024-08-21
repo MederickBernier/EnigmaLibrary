@@ -135,4 +135,38 @@ class FileUtils
     {
         return copy($source, $destination);
     }
+
+    /**
+     * Lists all files in a directory.
+     * 
+     * @param string $directory The directory to list files from.
+     * @return array An array of filenames.
+     */
+    public static function listFilesInDirectory(string $directory): array
+    {
+        return array_diff(scandir($directory), ['.', '..']);
+    }
+
+    /**
+     * Moves a file to a new destination.
+     * 
+     * @param string $source The source path of the file.
+     * @param string $destination The destination path for the file.
+     * @return bool True on success, false on failure.
+     */
+    public static function moveFile(string $source, string $destination): bool
+    {
+        return rename($source, $destination);
+    }
+
+    /**
+     * Gets the MIME type of a file.
+     * 
+     * @param string $filePath The path to the file.
+     * @return string The MIME type of the file.
+     */
+    public static function getMimeType(string $filePath): string
+    {
+        return mime_content_type($filePath);
+    }
 }
