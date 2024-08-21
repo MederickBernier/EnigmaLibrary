@@ -4,7 +4,7 @@ namespace EnigmaLibrary\Database;
 
 use PDO;
 
-class DefaultDbUtils{
+class DbUtils{
     /**
      * Connects to a database using PDO
      * 

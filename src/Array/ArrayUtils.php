@@ -2,7 +2,7 @@
 
 namespace EnigmaLibrary\Array;
 
-class DefaultArrayUtils{
+class ArrayUtils{
     /**
      * Flattens a multidimensional array into a single level.
      *
