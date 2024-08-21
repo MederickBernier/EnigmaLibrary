@@ -49,4 +49,25 @@ class ArrayUtils{
 
         return $merged;
     }
+
+    public static function arrayIsAssociative(array $array):bool{
+        return array_keys($array)!==range(0,count($array)-1);
+    }
+
+    public static function arrayExcept(array $array, array $keys):array{
+        return array_diff_key($array, array_flip($keys));
+    }
+
+    public static function arrayOnly(array $array, array $keys):array{
+        return array_intersect_key($array, array_flip($keys));
+    }
+
+    public static function arrayGroupBy(array $array, $key):array{
+        $result = [];
+        foreach($array as $item){
+            $groupKey = is_callable($key)?$key($item):$item[$key];
+            $result[$groupKey][] = $item;
+        }
+        return $result;
+    }
 }
