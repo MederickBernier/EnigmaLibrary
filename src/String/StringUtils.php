@@ -2,7 +2,8 @@
 
 namespace EnigmaLibrary\String;
 
-class StringUtils{
+class StringUtils
+{
 
     /**
      * Converts a string to a URL-friendly slug.
@@ -10,9 +11,10 @@ class StringUtils{
      * @param string $string The string to convert
      * @return string The slugified string.
      */
-    public static function toSlug(string $string):string{
+    public static function toSlug(string $string): string
+    {
         $string = strtolower($string);
-        $string = preg_replace('/[^a-z0-9]+/','-', $string);
+        $string = preg_replace('/[^a-z0-9]+/', '-', $string);
         return trim($string, '-');
     }
     /**
@@ -21,10 +23,11 @@ class StringUtils{
      * @param string $string The string to convert
      * @return string the camelCase string.
      */
-    public static function toCamelCase(string $string):string{
-        $string = str_replace(['-','_'],' ',strtolower($string));
+    public static function toCamelCase(string $string): string
+    {
+        $string = str_replace(['-', '_'], ' ', strtolower($string));
         $string = ucwords($string);
-        return lcfirst(str_replace(' ','',$string));
+        return lcfirst(str_replace(' ', '', $string));
     }
 
     /**
@@ -35,7 +38,8 @@ class StringUtils{
      * @param string $suffix The suffix to append if truncation occurs (default is '...').
      * @return string The truncated string.
      */
-    public static function truncate(string $string, int $length, string $suffix = '...'):string{
+    public static function truncate(string $string, int $length, string $suffix = '...'): string
+    {
         return strlen($string) > $length ? substr($string, 0, $length) . $suffix : $string;
     }
 
@@ -45,8 +49,9 @@ class StringUtils{
      * @param int $length The length of the random string (default is 16).
      * @return string The generated random string.
      */
-    public static function randomString(int $length = 16):string{
-        return bin2hex(random_bytes($length/2));
+    public static function randomString(int $length = 16): string
+    {
+        return bin2hex(random_bytes($length / 2));
     }
 
     /**
@@ -55,7 +60,8 @@ class StringUtils{
      * @param string $string The string to reverse
      * @return string The reversed string
      */
-    public static function reverse(string $string):string{
+    public static function reverse(string $string): string
+    {
         return strrev($string);
     }
 
@@ -65,9 +71,10 @@ class StringUtils{
      * @param string $string The string to convert
      * @return string The snake_case string
      */
-    public static function toSnakeCase(string $string):string{
-        $string = strtolower(preg_replace('/[A-Z]/','_$0',lcfirst($string)));
-        return preg_replace('/[^a-z0-9_]+/','_',$string);
+    public static function toSnakeCase(string $string): string
+    {
+        $string = strtolower(preg_replace('/[A-Z]/', '_$0', lcfirst($string)));
+        return preg_replace('/[^a-z0-9_]+/', '_', $string);
     }
 
     /**
@@ -77,7 +84,8 @@ class StringUtils{
      * @param string $startString The substring to check for.
      * @return bool True if the string starts with the substring, false otherwise.
      */
-    public static function startsWith(string $string, string $startString):bool{
+    public static function startsWith(string $string, string $startString): bool
+    {
         return strncmp($string, $startString, strlen($startString)) === 0;
     }
 
@@ -88,7 +96,27 @@ class StringUtils{
      * @param string $endString The substring to check for.
      * @return bool True if the string ends with the substring, false otherwise.
      */
-    public static function endsWith(string $string, string $endString):bool{
-        return $endString === '' || substr($string,- strlen($endString)) === $endString;
+    public static function endsWith(string $string, string $endString): bool
+    {
+        return $endString === '' || substr($string, -strlen($endString)) === $endString;
+    }
+
+    public static function contains(string $string, string $substring): bool
+    {
+        return strpos($string, $substring) !== false;
+    }
+
+    public static function ucwordsCustom(string $string, string $delimiter = ' '): string
+    {
+        return implode($delimiter, array_map('ucfirst', explode($delimiter, $string)));
+    }
+
+    public static function replaceFirst(string $search, string $replace, string $subject): string
+    {
+        $pos = strpos($subject, $search);
+        if ($pos !== false) {
+            return substr_replace($subject, $replace, $pos, strlen($search));
+        }
+        return $subject;
     }
 }
