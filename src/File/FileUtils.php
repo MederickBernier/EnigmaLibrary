@@ -2,7 +2,8 @@
 
 namespace EnigmaLibrary\File;
 
-class FileUtils{
+class FileUtils
+{
     /**
      * Handles file upload
      * 
@@ -10,7 +11,8 @@ class FileUtils{
      * @param string $destination The destination path where the file should be saved.
      * @return bool True on success, false on failure.
      */
-    public static function uploadFile(array $file, string $destination):bool{
+    public static function uploadFile(array $file, string $destination): bool
+    {
         return move_uploaded_file($file['tmp_name'], $destination);
     }
 
@@ -21,15 +23,16 @@ class FileUtils{
      * @param string $fileName The name of the file as it should appear in the download.
      * @return void
      */
-    public static function downloadFile(string $filePath, string $fileName):void{
-        if(file_exists($filePath)){
+    public static function downloadFile(string $filePath, string $fileName): void
+    {
+        if (file_exists($filePath)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename='.basename($fileName));
+            header('Content-Disposition: attachment; filename=' . basename($fileName));
             header('Expires:0');
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
-            header('Content-Length:'.filesize($filePath));
+            header('Content-Length:' . filesize($filePath));
             flush();
             readfile($filePath);
             exit;
@@ -43,7 +46,8 @@ class FileUtils{
      * @param array $allowedTypes An array of allowed file types (extensions).
      * @return bool True if the type is allowed, false otherwise.
      */
-    public static function validateFileType(string $fileName, array $allowedTypes):bool{
+    public static function validateFileType(string $fileName, array $allowedTypes): bool
+    {
         $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
         return in_array($fileType, $allowedTypes);
     }
@@ -55,8 +59,9 @@ class FileUtils{
      * @return string The content of the file.
      * @throws \Exception if the file cannot be read.
      */
-    public static function readFileContent(string $filePath):string{
-        if(!file_exists($filePath) || !is_readable($filePath)){
+    public static function readFileContent(string $filePath): string
+    {
+        if (!file_exists($filePath) || !is_readable($filePath)) {
             throw new \Exception("File not found or not readable: {$filePath}");
         }
         return file_get_contents($filePath);
@@ -70,8 +75,9 @@ class FileUtils{
      * @param bool $append Whether to append to the file (default is false, which overwrites the file).
      * @return bool True on success, false on failure.
      */
-    public static function writeFileContent(string $filePath, string $content, bool $append = false){
-        $flags = $append ? FILE_APPEND:0;
+    public static function writeFileContent(string $filePath, string $content, bool $append = false)
+    {
+        $flags = $append ? FILE_APPEND : 0;
         return file_put_contents($filePath, $content, $flags) !== false;
     }
 
@@ -81,10 +87,32 @@ class FileUtils{
      * @param string $filePath The path to the file to delete.
      * @return bool True on success, false on failure.
      */
-    public static function deleteFile(string $filePath):bool{
-        if(file_exists($filePath)){
+    public static function deleteFile(string $filePath): bool
+    {
+        if (file_exists($filePath)) {
             return unlink($filePath);
         }
         return false;
+    }
+    public static function getFileExtension(string $fileName): string
+    {
+        return pathinfo($fileName, PATHINFO_EXTENSION);
+    }
+
+    public static function getFileSize(string $filePath): string
+    {
+        $size = filesize($filePath);
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $unitIndex = 0;
+        while ($size >= 1024 && $unitIndex < count($units) - 1) {
+            $size /= 1024;
+            $unitIndex++;
+        }
+        return round($size, 2) . ' ' . $units[$unitIndex];
+    }
+
+    public static function copyFile(string $source, string $destination): bool
+    {
+        return copy($source, $destination);
     }
 }
