@@ -2,7 +2,8 @@
 
 namespace EnigmaLibrary\Array;
 
-class ArrayUtils{
+class ArrayUtils
+{
     /**
      * Flattens a multidimensional array into a single level.
      *
@@ -12,7 +13,9 @@ class ArrayUtils{
     public static function flatten(array $array): array
     {
         $result = [];
-        array_walk_recursive($array, function($a) use (&$result) { $result[] = $a; });
+        array_walk_recursive($array, function ($a) use (&$result) {
+            $result[] = $a;
+        });
         return $result;
     }
 
@@ -25,7 +28,9 @@ class ArrayUtils{
      */
     public static function pluck(array $array, string $key): array
     {
-        return array_map(function($v) use ($key) { return $v[$key] ?? null; }, $array);
+        return array_map(function ($v) use ($key) {
+            return $v[$key] ?? null;
+        }, $array);
     }
 
     /**
@@ -50,22 +55,26 @@ class ArrayUtils{
         return $merged;
     }
 
-    public static function arrayIsAssociative(array $array):bool{
-        return array_keys($array)!==range(0,count($array)-1);
+    public static function arrayIsAssociative(array $array): bool
+    {
+        return array_keys($array) !== range(0, count($array) - 1);
     }
 
-    public static function arrayExcept(array $array, array $keys):array{
+    public static function arrayExcept(array $array, array $keys): array
+    {
         return array_diff_key($array, array_flip($keys));
     }
 
-    public static function arrayOnly(array $array, array $keys):array{
+    public static function arrayOnly(array $array, array $keys): array
+    {
         return array_intersect_key($array, array_flip($keys));
     }
 
-    public static function arrayGroupBy(array $array, $key):array{
+    public static function arrayGroupBy(array $array, $key): array
+    {
         $result = [];
-        foreach($array as $item){
-            $groupKey = is_callable($key)?$key($item):$item[$key];
+        foreach ($array as $item) {
+            $groupKey = is_callable($key) ? $key($item) : $item[$key];
             $result[$groupKey][] = $item;
         }
         return $result;

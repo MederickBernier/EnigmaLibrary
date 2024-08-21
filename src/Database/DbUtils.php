@@ -4,7 +4,8 @@ namespace EnigmaLibrary\Database;
 
 use PDO;
 
-class DbUtils{
+class DbUtils
+{
     /**
      * Connects to a database using PDO
      * 
@@ -13,13 +14,14 @@ class DbUtils{
      * @param string $password The password for the database connection.
      * @return \PDO The PDO instance for the database connection.
      */
-    public static function connectToDatabase(string $dsn, string $username, string $password):PDO{
-        try{
+    public static function connectToDatabase(string $dsn, string $username, string $password): PDO
+    {
+        try {
             $pdo = new \PDO($dsn, $username, $password);
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             return $pdo;
-        }catch(\PDOException $e){
-            throw new \Exception('Database connection failed: '.$e->getMessage());
+        } catch (\PDOException $e) {
+            throw new \Exception('Database connection failed: ' . $e->getMessage());
         }
     }
 
@@ -31,17 +33,18 @@ class DbUtils{
      * @param array $columns An array of columns to select. Defaults to all columns
      * @return string the SQL query string
      */
-    public static function buildSelectQuery(string $table, array $conditions = [], array $columns = ['*']):string{
-        $columnsString = implode(',',$columns);
+    public static function buildSelectQuery(string $table, array $conditions = [], array $columns = ['*']): string
+    {
+        $columnsString = implode(',', $columns);
         $query = "SELECT {$columnsString} FROM {$table}";
 
-        if(!empty($conditions)){
+        if (!empty($conditions)) {
             $whereClauses = array_map(
                 fn($key, $value) => sprintf("%s = '%s'", $key, addslashes($value)),
                 array_keys($conditions),
                 $conditions
             );
-            $query .= ' WHERE '.implode(' AND ', $whereClauses);
+            $query .= ' WHERE ' . implode(' AND ', $whereClauses);
         }
         return $query;
     }

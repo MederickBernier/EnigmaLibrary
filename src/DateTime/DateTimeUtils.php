@@ -1,8 +1,9 @@
-<?php   
+<?php
 
 namespace EnigmaLibrary\DateTime;
 
-class DateTimeUtils{
+class DateTimeUtils
+{
     /**
      * Formats a given DateTime object into a string
      * 
@@ -10,7 +11,8 @@ class DateTimeUtils{
      * @param string $format The format to use (default: Y-m-d H:i:s).
      * @return string The formatted date string.
      */
-    public static function formatDate(\DateTime $date, string $format = 'Y-m-d H:i:s'):string{
+    public static function formatDate(\DateTime $date, string $format = 'Y-m-d H:i:s'): string
+    {
         return $date->format($format);
     }
 
@@ -23,11 +25,12 @@ class DateTimeUtils{
      * @return int The difference between the two dates in the specified unit.
      */
 
-     public static function dateDifference(\DateTime $date1, \DateTime $date2, string $unit = 'days'):int{
+    public static function dateDifference(\DateTime $date1, \DateTime $date2, string $unit = 'days'): int
+    {
         $diff = $date1->diff($date2);
 
-        switch($unit){
-            case'years':
+        switch ($unit) {
+            case 'years':
                 return $diff->y;
             case 'months':
                 return $diff->m;
@@ -35,16 +38,38 @@ class DateTimeUtils{
             default:
                 return $diff->days;
         }
-     }
+    }
 
-     /**
-      * Calculates the age based on a given birth date
-      *
-      *@param \DateTime $birthDate The birth date.
-      *@return int The calculated age.
-      */
-      public static function calculateAge(\DateTime $birthDate):int{
+    /**
+     * Calculates the age based on a given birth date
+     *
+     *@param \DateTime $birthDate The birth date.
+     *@return int The calculated age.
+     */
+    public static function calculateAge(\DateTime $birthDate): int
+    {
         $today = new \DateTime('today');
         return $birthDate->diff($today)->y;
-      }
+    }
+
+    public static function isWeekend(\DateTime $date): bool
+    {
+        return in_array($date->format('N'), [6, 7]);
+    }
+
+    public static function isLeapYear(int $year): bool
+    {
+        return ($year % 4 == 0 && $year % 100 != 0) || ($year % 400 == 0);
+    }
+    public static function addBusinessDays(\DateTime $date, int $days): \DateTime
+    {
+        $counter = 0;
+        while ($counter < $days) {
+            $date->modify('+1 day');
+            if (!in_array($date->format('N'), [6, 7])) {
+                $counter++;
+            }
+        }
+        return $date;
+    }
 }
