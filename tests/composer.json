@@ -1,0 +1,17 @@
+{
+    "name": "Enigma/EnigmaLibrary",
+    "description":"A Custom PHP Library with various utilities",
+    "type":"library",
+    "license":"MIT",
+    "autoload":{
+        "psr-4":{
+            "EnigmaLibrary\\":"src/"
+        }
+    },
+    "require":{
+        "php":">=8.0"
+    },
+    "require-dev":{
+        "phpunit/phpunit":"^9.0"
+    }
+}
