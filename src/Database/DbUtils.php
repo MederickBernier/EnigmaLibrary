@@ -45,4 +45,49 @@ class DbUtils{
         }
         return $query;
     }
+
+    public static function insertData(\PDO $pdo, string $table, array $data): bool
+    {
+        $columns = implode(', ', array_keys($data));
+        $placeholders = ':' . implode(', :', array_keys($data));
+        $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
+        $stmt = $pdo->prepare($sql);
+
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
+
+        return $stmt->execute();
+    }
+
+    public static function updateData(\PDO $pdo, string $table, array $data, array $conditions): bool
+    {
+        $setPart = implode(', ', array_map(fn($key) => "{$key} = :{$key}", array_keys($data)));
+        $wherePart = implode(' AND ', array_map(fn($key) => "{$key} = :where_{$key}", array_keys($conditions)));
+        $sql = "UPDATE {$table} SET {$setPart} WHERE {$wherePart}";
+        $stmt = $pdo->prepare($sql);
+
+        foreach ($data as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
+
+        foreach ($conditions as $key => $value) {
+            $stmt->bindValue(":where_{$key}", $value);
+        }
+
+        return $stmt->execute();
+    }
+
+    public static function deleteData(\PDO $pdo, string $table, array $conditions): bool
+    {
+        $wherePart = implode(' AND ', array_map(fn($key) => "{$key} = :{$key}", array_keys($conditions)));
+        $sql = "DELETE FROM {$table} WHERE {$wherePart}";
+        $stmt = $pdo->prepare($sql);
+
+        foreach ($conditions as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
+
+        return $stmt->execute();
+    }
 }
