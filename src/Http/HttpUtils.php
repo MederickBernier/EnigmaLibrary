@@ -12,7 +12,6 @@ class HttpUtils
      * @return string The response content.
      * @throws \Exception if the request fails.
      */
-
     public static function sendGetRequest(string $url, array $headers = []): string
     {
         $options = [
@@ -61,7 +60,7 @@ class HttpUtils
      * Formats a response in the specified format (JSON, XML, etc.)
      * 
      * @param mixed $data The data to format.
-     * @param string $format The format to use (default is 'json')
+     * @param string $format The format to use (default is 'json').
      * @return string The formatted response.
      * @throws \Exception if the format is not supported.
      */
@@ -80,12 +79,12 @@ class HttpUtils
     }
 
     /**
-     * Converts an array to XML format
+     * Converts an array to XML format.
      * 
      * @param mixed $data The data to convert.
      * @param string $rootNodeName The root node name for the XML (default is 'data').
      * @param \SimpleXMLElement|null $xml The SimpleXMLElement object for recursion.
-     * @return string the XML formatted string.
+     * @return string The XML formatted string.
      */
     public static function toXml($data, $rootNodeName = 'data', $xml = null): string
     {
@@ -105,16 +104,25 @@ class HttpUtils
     /**
      * Handles HTTP redirects.
      * 
-     * @param string $url The url to redirect to.
-     * @param int $statusCode The HTTP status code for the redirect (default is 302)
+     * @param string $url The URL to redirect to.
+     * @param int $statusCode The HTTP status code for the redirect (default is 302).
      * @return void
      */
     public static function redirect(string $url, int $statusCode = 302): void
     {
-        header("Location:{$url}", true, $statusCode);
+        header("Location: {$url}", true, $statusCode);
         exit();
     }
 
+    /**
+     * Sends an HTTP PUT request.
+     * 
+     * @param string $url The URL to send the request to.
+     * @param array $data The data to include in the PUT body.
+     * @param array $headers Optional headers to include in the request.
+     * @return string The response content.
+     * @throws \Exception if the request fails.
+     */
     public static function sendPutRequest(string $url, array $data, array $headers = []): string
     {
         $options = [
@@ -134,6 +142,14 @@ class HttpUtils
         return $response;
     }
 
+    /**
+     * Sends an HTTP DELETE request.
+     * 
+     * @param string $url The URL to send the request to.
+     * @param array $headers Optional headers to include in the request.
+     * @return string The response content.
+     * @throws \Exception if the request fails.
+     */
     public static function sendDeleteRequest(string $url, array $headers = []): string
     {
         $options = [
@@ -152,6 +168,12 @@ class HttpUtils
         return $response;
     }
 
+    /**
+     * Builds a query string from an array of parameters.
+     * 
+     * @param array $params The parameters to include in the query string.
+     * @return string The query string.
+     */
     public static function buildQueryString(array $params): string
     {
         return http_build_query($params);

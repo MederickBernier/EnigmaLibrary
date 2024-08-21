@@ -7,12 +7,13 @@ use PDO;
 class DbUtils
 {
     /**
-     * Connects to a database using PDO
+     * Connects to a database using PDO.
      * 
-     * @param string $dnb The Data Source Name (DSN) for the database connection.
+     * @param string $dsn The Data Source Name (DSN) for the database connection.
      * @param string $username The username for the database connection.
      * @param string $password The password for the database connection.
      * @return \PDO The PDO instance for the database connection.
+     * @throws \Exception if the connection fails.
      */
     public static function connectToDatabase(string $dsn, string $username, string $password): PDO
     {
@@ -26,12 +27,12 @@ class DbUtils
     }
 
     /**
-     * Builds a SELECT SQL query
+     * Builds a SELECT SQL query.
      * 
-     * @param string $table The name of the table
-     * @param array $conditions An associatve array of conditions for the WHERE clause
-     * @param array $columns An array of columns to select. Defaults to all columns
-     * @return string the SQL query string
+     * @param string $table The name of the table.
+     * @param array $conditions An associative array of conditions for the WHERE clause.
+     * @param array $columns An array of columns to select. Defaults to all columns.
+     * @return string The SQL query string.
      */
     public static function buildSelectQuery(string $table, array $conditions = [], array $columns = ['*']): string
     {
@@ -49,6 +50,14 @@ class DbUtils
         return $query;
     }
 
+    /**
+     * Inserts data into a table.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $table The name of the table to insert data into.
+     * @param array $data An associative array of data to insert (column => value).
+     * @return bool True on success, false on failure.
+     */
     public static function insertData(\PDO $pdo, string $table, array $data): bool
     {
         $columns = implode(', ', array_keys($data));
@@ -63,6 +72,15 @@ class DbUtils
         return $stmt->execute();
     }
 
+    /**
+     * Updates data in a table.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $table The name of the table to update.
+     * @param array $data An associative array of data to update (column => value).
+     * @param array $conditions An associative array of conditions for the WHERE clause.
+     * @return bool True on success, false on failure.
+     */
     public static function updateData(\PDO $pdo, string $table, array $data, array $conditions): bool
     {
         $setPart = implode(', ', array_map(fn($key) => "{$key} = :{$key}", array_keys($data)));
@@ -81,6 +99,14 @@ class DbUtils
         return $stmt->execute();
     }
 
+    /**
+     * Deletes data from a table.
+     * 
+     * @param \PDO $pdo The PDO instance for the database connection.
+     * @param string $table The name of the table to delete data from.
+     * @param array $conditions An associative array of conditions for the WHERE clause.
+     * @return bool True on success, false on failure.
+     */
     public static function deleteData(\PDO $pdo, string $table, array $conditions): bool
     {
         $wherePart = implode(' AND ', array_map(fn($key) => "{$key} = :{$key}", array_keys($conditions)));

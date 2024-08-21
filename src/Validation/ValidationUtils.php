@@ -95,16 +95,38 @@ class ValidationUtils
         return json_last_error() === JSON_ERROR_NONE;
     }
 
+    /**
+     * Validates if a string meets a minimum length.
+     *
+     * @param string $string The string to validate.
+     * @param int $minLength The minimum length the string should have.
+     * @return bool True if the string meets the minimum length, false otherwise.
+     */
     public static function validateMinLength(string $string, int $minLength): bool
     {
         return strlen($string) >= $minLength;
     }
 
+    /**
+     * Validates if a string does not exceed a maximum length.
+     *
+     * @param string $string The string to validate.
+     * @param int $maxLength The maximum length the string should have.
+     * @return bool True if the string does not exceed the maximum length, false otherwise.
+     */
     public static function validateMaxLength(string $string, int $maxLength): bool
     {
         return strlen($string) <= $maxLength;
     }
 
+    /**
+     * Validates if a value is within a specified range.
+     *
+     * @param int $value The value to validate.
+     * @param int $min The minimum acceptable value.
+     * @param int $max The maximum acceptable value.
+     * @return bool True if the value is within the range, false otherwise.
+     */
     public static function validateRange(int $value, int $min, int $max): bool
     {
         return $value >= $min && $value <= $max;

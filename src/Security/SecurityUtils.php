@@ -39,7 +39,7 @@ class SecurityUtils
     }
 
     /**
-     * Verified a CSRF token against a stored session token.
+     * Verifies a CSRF token against a stored session token.
      * 
      * @param string $token The CSRF token to verify.
      * @param string $sessionToken The session token to compare against.
@@ -76,7 +76,7 @@ class SecurityUtils
     }
 
     /**
-     * Decrypts a string using specified encryption algorithm.
+     * Decrypts a string using a specified encryption algorithm.
      * 
      * @param string $data The encrypted data to decrypt.
      * @param string $key The encryption key.
@@ -85,22 +85,43 @@ class SecurityUtils
     public static function decryptData(string $data, string $key): string
     {
         $data = base64_decode($data);
-        $ivLength = openssl_cipher_iv_length(('aes-256-cbc'));
+        $ivLength = openssl_cipher_iv_length('aes-256-cbc');
         $iv = substr($data, 0, $ivLength);
         $encryptedData = substr($data, $ivLength);
         return openssl_decrypt($encryptedData, 'aes-256-cbc', $key, 0, $iv);
     }
 
+    /**
+     * Generates a random token of a specified length.
+     * 
+     * @param int $length The length of the token (default is 32).
+     * @return string The generated random token.
+     */
     public static function generateRandomToken(int $length = 32): string
     {
         return bin2hex(random_bytes($length / 2));
     }
 
+    /**
+     * Hashes data using a specified hashing algorithm.
+     * 
+     * @param string $data The data to hash.
+     * @param string $algorithm The hashing algorithm to use (default is 'sha256').
+     * @return string The hashed data.
+     */
     public static function hashData(string $data, string $algorithm = 'sha256'): string
     {
         return hash($algorithm, $data);
     }
 
+    /**
+     * Verifies if data matches a given hash using a specified hashing algorithm.
+     * 
+     * @param string $data The data to verify.
+     * @param string $hash The hash to compare against.
+     * @param string $algorithm The hashing algorithm used (default is 'sha256').
+     * @return bool True if the data matches the hash, false otherwise.
+     */
     public static function verifyHash(string $data, string $hash, string $algorithm = 'sha256'): bool
     {
         return hash_equals($hash, self::hashData($data, $algorithm));

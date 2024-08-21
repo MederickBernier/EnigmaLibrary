@@ -55,21 +55,48 @@ class ArrayUtils
         return $merged;
     }
 
+    /**
+     * Checks if an array is associative (contains non-numeric keys).
+     *
+     * @param array $array The array to check.
+     * @return bool True if the array is associative, false otherwise.
+     */
     public static function arrayIsAssociative(array $array): bool
     {
         return array_keys($array) !== range(0, count($array) - 1);
     }
 
+    /**
+     * Returns an array without the specified keys.
+     *
+     * @param array $array The array to modify.
+     * @param array $keys The keys to exclude from the array.
+     * @return array The modified array.
+     */
     public static function arrayExcept(array $array, array $keys): array
     {
         return array_diff_key($array, array_flip($keys));
     }
 
+    /**
+     * Returns an array containing only the specified keys.
+     *
+     * @param array $array The array to modify.
+     * @param array $keys The keys to include in the array.
+     * @return array The modified array.
+     */
     public static function arrayOnly(array $array, array $keys): array
     {
         return array_intersect_key($array, array_flip($keys));
     }
 
+    /**
+     * Groups an array by a specified key or callable.
+     *
+     * @param array $array The array to group.
+     * @param string|callable $key The key or callable to group by.
+     * @return array The grouped array.
+     */
     public static function arrayGroupBy(array $array, $key): array
     {
         $result = [];

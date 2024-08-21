@@ -8,7 +8,7 @@ class StringUtils
     /**
      * Converts a string to a URL-friendly slug.
      * 
-     * @param string $string The string to convert
+     * @param string $string The string to convert.
      * @return string The slugified string.
      */
     public static function toSlug(string $string): string
@@ -17,11 +17,12 @@ class StringUtils
         $string = preg_replace('/[^a-z0-9]+/', '-', $string);
         return trim($string, '-');
     }
+
     /**
-     * Converts a string to camelCase
+     * Converts a string to camelCase.
      * 
-     * @param string $string The string to convert
-     * @return string the camelCase string.
+     * @param string $string The string to convert.
+     * @return string The camelCase string.
      */
     public static function toCamelCase(string $string): string
     {
@@ -44,7 +45,7 @@ class StringUtils
     }
 
     /**
-     * Generates a random string of a specified length
+     * Generates a random string of a specified length.
      * 
      * @param int $length The length of the random string (default is 16).
      * @return string The generated random string.
@@ -57,8 +58,8 @@ class StringUtils
     /**
      * Reverses a string.
      * 
-     * @param string $string The string to reverse
-     * @return string The reversed string
+     * @param string $string The string to reverse.
+     * @return string The reversed string.
      */
     public static function reverse(string $string): string
     {
@@ -66,10 +67,10 @@ class StringUtils
     }
 
     /**
-     * Converts a string to snake_case
+     * Converts a string to snake_case.
      * 
-     * @param string $string The string to convert
-     * @return string The snake_case string
+     * @param string $string The string to convert.
+     * @return string The snake_case string.
      */
     public static function toSnakeCase(string $string): string
     {
@@ -101,16 +102,38 @@ class StringUtils
         return $endString === '' || substr($string, -strlen($endString)) === $endString;
     }
 
+    /**
+     * Checks if a string contains a specified substring.
+     * 
+     * @param string $string The string to check.
+     * @param string $substring The substring to check for.
+     * @return bool True if the string contains the substring, false otherwise.
+     */
     public static function contains(string $string, string $substring): bool
     {
         return strpos($string, $substring) !== false;
     }
 
+    /**
+     * Converts the first letter of each word in a string to uppercase, using a specified delimiter.
+     * 
+     * @param string $string The string to convert.
+     * @param string $delimiter The delimiter used to separate words (default is ' ').
+     * @return string The string with each word capitalized.
+     */
     public static function ucwordsCustom(string $string, string $delimiter = ' '): string
     {
         return implode($delimiter, array_map('ucfirst', explode($delimiter, $string)));
     }
 
+    /**
+     * Replaces the first occurrence of a substring in a string with another substring.
+     * 
+     * @param string $search The substring to search for.
+     * @param string $replace The substring to replace the first occurrence with.
+     * @param string $subject The string to search and replace in.
+     * @return string The string with the first occurrence of the substring replaced.
+     */
     public static function replaceFirst(string $search, string $replace, string $subject): string
     {
         $pos = strpos($subject, $search);
